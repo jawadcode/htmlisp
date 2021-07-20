@@ -71,9 +71,9 @@ impl<'input> Parser<'input> {
                 }
             };
             attributes.push((attr, value));
-        }
 
-        self.skip_whitespace()?;
+            self.skip_whitespace()?;
+        }
 
         let mut inner: Vec<Node> = vec![];
         while {
@@ -160,6 +160,13 @@ mod tests {
     #[test]
     fn nested() {
         let test = r#"(div :style "background: white" (h1 "hello") (p "world"))"#;
+        let parsed = Parser::new(test).parse().unwrap();
+        println!("Input: {}\nOutput:\n{}", test, parsed);
+    }
+
+    #[test]
+    fn multi_attr() {
+        let test = r#"(meta :name "viewport" :content "width=device-width, initial-scale=1")"#;
         let parsed = Parser::new(test).parse().unwrap();
         println!("Input: {}\nOutput:\n{}", test, parsed);
     }
