@@ -95,13 +95,16 @@ impl<'input> Parser<'input> {
     }
 
     fn parse_string(&mut self) -> Option<String> {
-        self.input.next();
-
+        let mut prev = self.input.next()?;
         let mut string = String::new();
-        while self.input.peek()? != &'"' {
-            string.push(self.input.next()?);
+        while !(self.input.peek()? == &'"') || (prev == '\\') {
+            let next = self.input.next()?;
+            string.push(next);
+            prev = next;
         }
+
         self.input.next();
+        string = string.replace("\\\"", "\"");
         Some(string)
     }
 
@@ -167,6 +170,13 @@ mod tests {
     #[test]
     fn multi_attr() {
         let test = r#"(meta :name "viewport" :content "width=device-width, initial-scale=1")"#;
+        let parsed = Parser::new(test).parse().unwrap();
+        println!("Input: {}\nOutput:\n{}", test, parsed);
+    }
+
+    #[test]
+    fn escape_string() {
+        let test = r#"(p "jioj\"jiojio\"")"#;
         let parsed = Parser::new(test).parse().unwrap();
         println!("Input: {}\nOutput:\n{}", test, parsed);
     }
