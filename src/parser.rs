@@ -1,17 +1,8 @@
 use core::fmt;
-use std::{fmt::write, iter::Peekable, str::Chars};
-
-pub fn parse_htmlisp(input: &str) -> String {
-    format!(
-        "{}",
-        Parser::new(input)
-            .parse()
-            .expect("Failed to parse HTMLisp :(")
-    )
-}
+use std::{iter::Peekable, str::Chars};
 
 #[derive(Debug)]
-enum Node {
+pub enum Node {
     Text(String),
     Tag {
         name: String,
@@ -20,7 +11,7 @@ enum Node {
     },
 }
 
-struct Parser<'input> {
+pub struct Parser<'input> {
     input: Peekable<Chars<'input>>,
 }
 
@@ -131,11 +122,7 @@ impl fmt::Display for Node {
                     format!(
                         "<{}{}>{}</{}>",
                         name,
-                        attributes
-                            .iter()
-                            .map(|(attr, val)| format!(" {}=\"{}\"", attr, val))
-                            .collect::<Vec<_>>()
-                            .join(" "),
+                        fmt_attrs(attributes),
                         inner
                             .iter()
                             .map(|n| format!("{}", n))
@@ -147,6 +134,43 @@ impl fmt::Display for Node {
             }
         )
     }
+}
+
+impl Node {
+    pub fn pretty_print(&self, depth: usize) -> String {
+        match self {
+            Self::Text(s) => format!("{}{}", "\t".repeat(depth), s),
+            Self::Tag {
+                name,
+                attributes,
+                inner,
+            } => {
+                format!(
+                    "{}<{}{}>{}{}{}{}</{}>",
+                    "\t".repeat(depth),
+                    name,
+                    fmt_attrs(attributes),
+                    if inner.len() > 0 { "\n" } else { "" },
+                    inner
+                        .iter()
+                        .map(|node| node.pretty_print(depth + 1))
+                        .collect::<Vec<_>>()
+                        .join("\n"),
+                    if inner.len() > 0 { "\n" } else { "" },
+                    "\t".repeat(depth),
+                    name
+                )
+            }
+        }
+    }
+}
+
+fn fmt_attrs(attrs: &[(String, String)]) -> String {
+    attrs
+        .iter()
+        .map(|(attr, val)| format!(" {}=\"{}\"", attr, val))
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 #[cfg(test)]
