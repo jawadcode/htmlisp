@@ -1,1 +1,4 @@
 /target
+/examples/input/*.htmlisp
+/examples/output/pretty/*.html
+/examples/output/ugly/*.html
