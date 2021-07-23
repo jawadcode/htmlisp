@@ -32,11 +32,7 @@ impl<'input> Parser<'input> {
 
     fn parse_tag(&mut self) -> Option<Node> {
         self.input.next();
-        let name: String = self
-            .input
-            .by_ref()
-            .take_while(char::is_ascii_alphanumeric)
-            .collect();
+        let name = self.parse_ident()?;
 
         self.skip_whitespace()?;
 
@@ -44,11 +40,7 @@ impl<'input> Parser<'input> {
         while self.input.peek()? == &':' {
             self.input.next();
 
-            let attr: String = self
-                .input
-                .by_ref()
-                .take_while(char::is_ascii_alphanumeric)
-                .collect();
+            let attr = self.parse_ident()?;
 
             self.skip_whitespace();
 
@@ -83,6 +75,19 @@ impl<'input> Parser<'input> {
             attributes,
             inner,
         })
+    }
+
+    /// DAMN YOU `Iterator::take_while` WHY CAN'T YOU BE NORMAL AND PEEK BEFORE CONSUMING
+    fn parse_ident(&mut self) -> Option<String> {
+        if !self.input.peek()?.is_ascii_alphanumeric() {
+            return None;
+        }
+        let mut attr = String::new();
+        while self.input.peek()?.is_ascii_alphanumeric() {
+            attr.push(self.input.next()?);
+        }
+
+        Some(attr)
     }
 
     fn parse_string(&mut self) -> Option<String> {
@@ -201,6 +206,13 @@ mod tests {
     #[test]
     fn escape_string() {
         let test = r#"(p "jioj\"jiojio\"")"#;
+        let parsed = Parser::new(test).parse().unwrap();
+        println!("Input: {}\nOutput:\n{}", test, parsed);
+    }
+
+    #[test]
+    fn empty() {
+        let test = r#"(html)"#;
         let parsed = Parser::new(test).parse().unwrap();
         println!("Input: {}\nOutput:\n{}", test, parsed);
     }
