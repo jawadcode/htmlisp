@@ -35,8 +35,7 @@ text_content = [
     "pre",
 ] + [None] * 4
 
-inline_text = ["a", "b", "code", "em",
-               "i", "q", "span", "strong"] + [None] * 10
+inline_text = ["a", "b", "code", "em", "i", "q", "span", "strong"] + [None] * 10
 
 text = text_content + inline_text
 any_elem = containers + text
@@ -51,22 +50,44 @@ def main():
         with open(f"./input/random{i}.htmlisp", "w") as file:
             file.write(test)
 
-    results = [0] * num
+    pretty_results = [0] * num
     for i in range(0, num):
         start_time = time.time_ns()
         subprocess.run(
             [
                 "../target/release/htmlisp",
+                "--input",
                 f"input/random{i}.htmlisp",
-                f"output/random{i}.html",
+                "--output",
+                f"output/pretty/random{i}.html",
+                "--prettify"
             ],
             stderr=subprocess.STDOUT,
         )
         end_time = time.time_ns()
-        results[i] = end_time - start_time
+        pretty_results[i] = end_time - start_time
 
-    avg = sum(results) / num
-    print("Average ms:", avg / 1000000)
+    avg = sum(pretty_results) / num
+    print("Prettified avg ms:", avg / 1000000)
+
+    ugly_results = [0] * num
+    for i in range(0, num):
+        start_time = time.time_ns()
+        subprocess.run(
+            [
+                "../target/release/htmlisp",
+                "--input",
+                f"input/random{i}.htmlisp",
+                "--output",
+                f"output/ugly/random{i}.html",
+            ],
+            stderr=subprocess.STDOUT,
+        )
+        end_time = time.time_ns()
+        ugly_results[i] = end_time - start_time
+
+    avg = sum(ugly_results) / num
+    print("Uglified avg ms:", avg / 1000000)
 
 
 def gen_container(depth=1) -> str:
@@ -75,7 +96,7 @@ def gen_container(depth=1) -> str:
         return "\n" + "\t" * depth + f'"{lorem.get_paragraph()}"'
 
     string = "\n" + "\t" * depth + f"({tag}"
-    for i in range((5 - depth) * 3):
+    for _ in range((5 - depth) * 3):
         string += "\n"
         if bool(random.getrandbits(1)) and depth < 4:
             string += gen_container(depth + 1)
@@ -90,9 +111,14 @@ def gen_text_content(depth: int) -> str:
     if tag == None:
         return "\t" * depth + f'"{lorem.get_paragraph()}"'
 
-    string = "\n" + "\t" * depth + f'({tag}' + "\n"
-    string += "\n".join([gen_inline_text(depth + 1)
-                        for _ in range((6 - depth) * 5)]) + ")"
+    string = (
+        "\n"
+        + "\t" * depth
+        + f"({tag}"
+        + "\n"
+        + "\n".join([gen_inline_text(depth + 1) for _ in range((6 - depth) * 5)])
+        + ")"
+    )
     return string
 
 
