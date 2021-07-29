@@ -130,7 +130,7 @@ impl fmt::Display for Node {
                         fmt_attrs(attributes),
                         inner
                             .iter()
-                            .map(|n| n.to_string())
+                            .map(ToString::to_string)
                             .collect::<Vec<_>>()
                             .join(""),
                         name
