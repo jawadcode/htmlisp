@@ -130,7 +130,7 @@ impl fmt::Display for Node {
                         fmt_attrs(attributes),
                         inner
                             .iter()
-                            .map(|n| format!("{}", n))
+                            .map(|n| n.to_string())
                             .collect::<Vec<_>>()
                             .join(""),
                         name
@@ -150,19 +150,24 @@ impl Node {
                 attributes,
                 inner,
             } => {
+                let not_empty = inner.len() > 0;
                 format!(
                     "{}<{}{}>{}{}{}{}</{}>",
                     "\t".repeat(depth),
                     name,
                     fmt_attrs(attributes),
-                    if inner.len() > 0 { "\n" } else { "" },
+                    if not_empty { "\n" } else { "" },
                     inner
                         .iter()
                         .map(|node| node.pretty_print(depth + 1))
                         .collect::<Vec<_>>()
                         .join("\n"),
-                    if inner.len() > 0 { "\n" } else { "" },
-                    "\t".repeat(depth),
+                    if not_empty { "\n" } else { "" },
+                    if not_empty {
+                        "\t".repeat(depth)
+                    } else {
+                        "".to_string()
+                    },
                     name
                 )
             }
