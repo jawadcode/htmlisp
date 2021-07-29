@@ -175,7 +175,7 @@ fn fmt_attrs(attrs: &[(String, String)]) -> String {
         .iter()
         .map(|(attr, val)| format!(" {}=\"{}\"", attr, val))
         .collect::<Vec<_>>()
-        .join(" ")
+        .join("")
 }
 
 #[cfg(test)]
