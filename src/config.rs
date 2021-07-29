@@ -3,6 +3,7 @@ use std::{env, fmt};
 pub struct Config {
     pub help: bool,
     pub prettify: bool,
+    pub watch: bool,
     pub input_file: String,
     pub output_file: String,
 }
@@ -14,6 +15,7 @@ impl Config {
         let mut cfg = Config {
             help: false,
             prettify: false,
+            watch: false,
             input_file: String::new(),
             output_file: String::new(),
         };
@@ -27,6 +29,9 @@ impl Config {
                 }
                 "-p" | "--prettify" => {
                     cfg.prettify = true;
+                }
+                "-w" | "--watch" => {
+                    cfg.watch = true;
                 }
                 "-h" | "--help" => {
                     cfg.help = true;

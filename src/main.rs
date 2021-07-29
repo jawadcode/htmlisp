@@ -61,8 +61,16 @@ fn run(config: Config) -> Result<(String, String), ProgramError> {
     if config.help {
         help();
         process::exit(0);
+    } else if config.watch {
+        watch(&config)?
+    } else {
+        read_write(&config)?
     }
 
+    Ok((config.input_file, config.output_file))
+}
+
+fn read_write(config: &Config) -> Result<(), ProgramError> {
     let input = fs::read_to_string(&config.input_file).map_err(|e| ProgramError::ReadInput(e))?;
     let html = Parser::new(&input)
         .parse()
@@ -77,8 +85,15 @@ fn run(config: Config) -> Result<(String, String), ProgramError> {
     } else {
         write!(&mut output, "{}", html).map_err(|e| ProgramError::WriteOutput(e))?;
     }
+    Ok(())
+}
 
-    Ok((config.input_file, config.output_file))
+fn watch(config: &Config) -> Result<(), ProgramError> {
+    // stuff
+    loop {
+        // things
+    }
+    Ok(())
 }
 
 fn help() {
