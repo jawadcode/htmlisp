@@ -84,6 +84,11 @@ fn read_write(config: &Config) -> Result<(), ProgramError> {
         .parse()
         .ok_or(ProgramError::ParseInput)?;
 
+    // Create missing directories in the output path
+    let mut output_dir = PathBuf::from(&config.output_file);
+    output_dir.pop(); // Remove the filename and extension from the path
+    fs::create_dir_all(output_dir).map_err(|e| ProgramError::CreateOutputFile(e))?;
+    
     let mut output =
         File::create(&config.output_file).map_err(|e| ProgramError::CreateOutputFile(e))?;
 
