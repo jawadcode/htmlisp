@@ -13,7 +13,7 @@ To annoy a few people
 * CD into cloned repo
 * Compile: `cargo build --release`
 * Copy executable to `/usr/bin` (`sudo cp target/release/htmlisp /usr/bin`)
-* Run: `htmlisp -i <path to htmlisp input file> -o <path to html output file>` 
+* Run: `htmlisp -i <path to htmlisp input file> -o <path to html output file>` or `htmlisp -w <directory to watch>` 
 
 ## Example:
 
