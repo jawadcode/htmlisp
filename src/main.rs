@@ -7,6 +7,7 @@ use std::{
     env, fmt,
     fs::{self, File},
     io::{self, Write},
+    path::Path,
     process,
 };
 
@@ -37,6 +38,7 @@ enum ProgramError {
     ParseInput,
     CreateOutputFile(io::Error),
     WriteOutput(io::Error),
+    WatchDirIncorrect(String),
 }
 
 impl fmt::Display for ProgramError {
@@ -52,6 +54,8 @@ impl fmt::Display for ProgramError {
                     format!("Failed to create output file\n({})", e.to_string()),
                 ProgramError::WriteOutput(e) =>
                     format!("Failed to write to output file:\n({})", e.to_string()),
+                ProgramError::WatchDirIncorrect(p) =>
+                    format!("'{}' is not a directory", p).to_string(),
             }
         )
     }
@@ -61,7 +65,7 @@ fn run(config: Config) -> Result<(String, String), ProgramError> {
     if config.help {
         help();
         process::exit(0);
-    } else if config.watch {
+    } else if config.watch.len() > 0 {
         watch(&config)?
     } else {
         read_write(&config)?
@@ -89,10 +93,15 @@ fn read_write(config: &Config) -> Result<(), ProgramError> {
 }
 
 fn watch(config: &Config) -> Result<(), ProgramError> {
-    // stuff
-    loop {
-        // things
+    if !Path::new(&config.watch).is_dir() {
+        return Err(ProgramError::WatchDirIncorrect(config.watch.clone()));
     }
+
+    // // stuff
+    // loop {
+    //     // things
+    // }
+
     Ok(())
 }
 

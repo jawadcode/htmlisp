@@ -3,7 +3,7 @@ use std::{env, fmt};
 pub struct Config {
     pub help: bool,
     pub prettify: bool,
-    pub watch: bool,
+    pub watch: String,
     pub input_file: String,
     pub output_file: String,
 }
@@ -15,7 +15,7 @@ impl Config {
         let mut cfg = Config {
             help: false,
             prettify: false,
-            watch: false,
+            watch: String::new(),
             input_file: String::new(),
             output_file: String::new(),
         };
@@ -31,7 +31,7 @@ impl Config {
                     cfg.prettify = true;
                 }
                 "-w" | "--watch" => {
-                    cfg.watch = true;
+                    cfg.watch = args.next().ok_or(ArgsError::WatchDirMissing)?;
                 }
                 "-h" | "--help" => {
                     cfg.help = true;
@@ -40,9 +40,9 @@ impl Config {
             }
         }
 
-        if cfg.input_file.is_empty() && !cfg.help {
+        if cfg.input_file.is_empty() && !cfg.help && cfg.watch.is_empty() {
             return Err(ArgsError::InputMissing);
-        } else if cfg.output_file.is_empty() && !cfg.help {
+        } else if cfg.output_file.is_empty() && !cfg.help && cfg.watch.is_empty() {
             return Err(ArgsError::OutputMissing);
         }
 
@@ -53,6 +53,7 @@ impl Config {
 pub enum ArgsError {
     InputMissing,
     OutputMissing,
+    WatchDirMissing,
     UnknownArg(String),
 }
 
@@ -64,6 +65,7 @@ impl fmt::Display for ArgsError {
             match self {
                 ArgsError::InputMissing => "Input file not specified".to_string(),
                 ArgsError::OutputMissing => "Output file not specified".to_string(),
+                ArgsError::WatchDirMissing => "Directory to watch not specified".to_string(),
                 ArgsError::UnknownArg(s) => format!("Unknown flag '{}'", s),
             }
         )
