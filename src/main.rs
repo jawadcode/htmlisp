@@ -107,7 +107,7 @@ fn watch(config: &Config) -> Result<(), ProgramError> {
     }
 
     let (transmit, receive) = channel();
-    let mut watcher = watcher(transmit, Duration::from_secs(1)).unwrap(); // Create watcher with 1 second debounce time
+    let mut watcher = watcher(transmit, Duration::from_millis(500)).unwrap(); // Create watcher with 1 second debounce time
 
     watcher
         .watch(&config.watch, RecursiveMode::Recursive)
