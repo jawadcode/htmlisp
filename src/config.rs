@@ -47,8 +47,6 @@ impl Config {
             return Err(ArgsError::OutputMissing);
         }
 
-        dbg!(&cfg);
-
         Ok(cfg)
     }
 }
