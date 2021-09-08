@@ -1,5 +1,6 @@
 use std::{env, fmt};
 
+#[derive(Debug)]
 pub struct Config {
     pub help: bool,
     pub prettify: bool,
@@ -42,9 +43,11 @@ impl Config {
 
         if cfg.input_file.is_empty() && !cfg.help && cfg.watch.is_empty() {
             return Err(ArgsError::InputMissing);
-        } else if cfg.output_file.is_empty() && !cfg.help && cfg.watch.is_empty() {
+        } else if cfg.output_file.is_empty() && !cfg.help {
             return Err(ArgsError::OutputMissing);
         }
+
+        dbg!(&cfg);
 
         Ok(cfg)
     }

@@ -104,7 +104,7 @@ fn watch(config: &Config) -> Result<(), ProgramError> {
     }
 
     let (transmit, receive) = channel();
-    let mut watcher = watcher(transmit, Duration::from_millis(500)).unwrap(); // Create watcher with 1 second debounce time
+    let mut watcher = watcher(transmit, Duration::from_millis(250)).unwrap(); // Create watcher with 1 second debounce time
 
     watcher
         .watch(&config.watch, RecursiveMode::Recursive)
@@ -198,7 +198,7 @@ Optional Flags:
     -w/--watch <directory> Watch a directory for changes and re-compile:
         outputs to <working directory>/output/,
         preserves input directory structure,
-        and makes -i/--input and -o/--output optional
+        and makes -i/--input flag optional
 
 Note:
     If the output file already exists, it will be overwritten
