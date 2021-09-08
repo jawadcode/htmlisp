@@ -25,7 +25,7 @@ impl<'input> Parser<'input> {
     pub fn parse(&mut self) -> Option<Node> {
         match self.input.peek()? {
             '(' => self.parse_tag(),
-            '"' => self.parse_string().map(|x| Node::Text(x)),
+            '"' => self.parse_string().map(Node::Text),
             _ => unreachable!(),
         }
     }
@@ -46,12 +46,10 @@ impl<'input> Parser<'input> {
 
             let value = if self.input.peek()? == &':' {
                 "".to_string()
+            } else if self.input.peek()? != &'"' {
+                return None;
             } else {
-                if self.input.peek()? != &'"' {
-                    return None;
-                } else {
-                    self.parse_string()?
-                }
+                self.parse_string()?
             };
             attributes.push((attr, value));
 
@@ -93,7 +91,7 @@ impl<'input> Parser<'input> {
     fn parse_string(&mut self) -> Option<String> {
         let mut prev = self.input.next()?;
         let mut string = String::new();
-        while !(self.input.peek()? == &'"') || (prev == '\\') {
+        while self.input.peek()? != &'"' || (prev == '\\') {
             let next = self.input.next()?;
             string.push(next);
             prev = next;
@@ -150,7 +148,7 @@ impl Node {
                 attributes,
                 inner,
             } => {
-                let not_empty = inner.len() > 0;
+                let not_empty = !inner.is_empty();
                 format!(
                     "{}<{}{}>{}{}{}{}</{}>",
                     "\t".repeat(depth),
