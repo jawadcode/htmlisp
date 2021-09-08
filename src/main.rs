@@ -198,7 +198,7 @@ Optional Flags:
     -w/--watch <directory> Watch a directory for changes and re-compile:
         outputs to <working directory>/output/,
         preserves input directory structure,
-        and makes -i/--input flag optional
+        and makes the -i/--input and -o/--output flags optional
 
 Note:
     If the output file already exists, it will be overwritten

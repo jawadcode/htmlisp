@@ -43,7 +43,7 @@ impl Config {
 
         if cfg.input_file.is_empty() && !cfg.help && cfg.watch.is_empty() {
             return Err(ArgsError::InputMissing);
-        } else if cfg.output_file.is_empty() && !cfg.help {
+        } else if cfg.output_file.is_empty() && !cfg.help && cfg.watch.is_empty() {
             return Err(ArgsError::OutputMissing);
         }
 
